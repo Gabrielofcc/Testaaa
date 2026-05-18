@@ -1,30 +1,33 @@
---// BLACK CLOVER UI LIB - MODERN REMAKE
---// visual style inspirado em Black Clover
---// animações fluidas + glow + blur + transições suaves
+--// ASTA MODERN UI LIB
+--// Black Clover Inspired
+--// Modern + Smooth + Clean
+--// No particles
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 
-local Player = Players.LocalPlayer
-
 local Library = {}
+
 Library.Theme = {
-    Background = Color3.fromRGB(10,10,14),
-    Secondary = Color3.fromRGB(16,16,22),
-    Accent = Color3.fromRGB(120, 40, 255),
-    Accent2 = Color3.fromRGB(180, 80, 255),
-    Text = Color3.fromRGB(240,240,240),
-    DarkText = Color3.fromRGB(140,140,140),
-    Stroke = Color3.fromRGB(40,40,50)
+    Background = Color3.fromRGB(8,8,12),
+    Secondary = Color3.fromRGB(14,14,20),
+    Card = Color3.fromRGB(18,18,26),
+
+    Accent = Color3.fromRGB(125, 65, 255),
+    AccentDark = Color3.fromRGB(85, 45, 180),
+
+    Stroke = Color3.fromRGB(40,40,50),
+
+    Text = Color3.fromRGB(255,255,255),
+    DarkText = Color3.fromRGB(170,170,170)
 }
 
 function Library:Tween(obj, props, speed)
     TweenService:Create(
         obj,
         TweenInfo.new(
-            speed or 0.25,
+            speed or 0.2,
             Enum.EasingStyle.Quart,
             Enum.EasingDirection.Out
         ),
@@ -42,89 +45,93 @@ function Library:Create(class, props)
     return obj
 end
 
-function Library:Window(title)
-    local ScreenGui = self:Create("ScreenGui", {
-        Name = "BlackCloverUI",
+function Library:MakeWindow(cfg)
+    local Title = cfg.Name or "ASTA HUB"
+
+    local Gui = self:Create("ScreenGui", {
         Parent = CoreGui,
+        Name = "AstaModernUI",
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     })
 
     local Main = self:Create("Frame", {
-        Parent = ScreenGui,
-        Size = UDim2.new(0, 620, 0, 420),
-        Position = UDim2.new(0.5,-310,0.5,-210),
+        Parent = Gui,
+        Size = UDim2.new(0, 700, 0, 430),
+        Position = UDim2.new(0.5,-350,0.5,-215),
         BackgroundColor3 = self.Theme.Background,
         BorderSizePixel = 0
     })
 
-    local Corner = self:Create("UICorner", {
+    self:Create("UICorner", {
         Parent = Main,
-        CornerRadius = UDim.new(0,18)
+        CornerRadius = UDim.new(0,20)
     })
 
-    local Stroke = self:Create("UIStroke", {
+    self:Create("UIStroke", {
         Parent = Main,
         Color = self.Theme.Stroke,
-        Thickness = 1.2
+        Thickness = 1.3
     })
 
+    -- glow
     local Glow = self:Create("ImageLabel", {
         Parent = Main,
         BackgroundTransparency = 1,
         Image = "rbxassetid://5028857084",
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(24,24,276,276),
-        ImageTransparency = 0.25,
         ImageColor3 = self.Theme.Accent,
-        Size = UDim2.new(1,40,1,40),
-        Position = UDim2.new(0,-20,0,-20),
+        ImageTransparency = 0.35,
+        Size = UDim2.new(1,60,1,60),
+        Position = UDim2.new(0,-30,0,-30),
         ZIndex = 0
     })
 
+    -- topbar
     local Topbar = self:Create("Frame", {
         Parent = Main,
-        Size = UDim2.new(1,0,0,60),
+        Size = UDim2.new(1,0,0,65),
         BackgroundTransparency = 1
     })
 
-    local Title = self:Create("TextLabel", {
+    local HubTitle = self:Create("TextLabel", {
         Parent = Topbar,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0,24,0,0),
-        Size = UDim2.new(1,-24,1,0),
+        Position = UDim2.new(0,25,0,0),
+        Size = UDim2.new(1,-25,1,0),
         Font = Enum.Font.GothamBlack,
-        Text = title or "BLACK CLOVER",
+        Text = Title,
+        TextSize = 25,
         TextColor3 = self.Theme.Text,
-        TextSize = 24,
         TextXAlignment = Enum.TextXAlignment.Left
     })
 
-    local AccentLine = self:Create("Frame", {
+    local AccentBar = self:Create("Frame", {
         Parent = Topbar,
-        AnchorPoint = Vector2.new(0,1),
-        Position = UDim2.new(0,24,1,-6),
-        Size = UDim2.new(0,120,0,3),
+        Position = UDim2.new(0,25,1,-8),
+        Size = UDim2.new(0,140,0,4),
         BackgroundColor3 = self.Theme.Accent,
         BorderSizePixel = 0
     })
 
     self:Create("UICorner", {
-        Parent = AccentLine,
+        Parent = AccentBar,
         CornerRadius = UDim.new(1,0)
     })
 
+    -- sidebar
     local Sidebar = self:Create("Frame", {
         Parent = Main,
-        Position = UDim2.new(0,14,0,75),
-        Size = UDim2.new(0,170,1,-90),
+        Position = UDim2.new(0,15,0,80),
+        Size = UDim2.new(0,185,1,-95),
         BackgroundColor3 = self.Theme.Secondary,
         BorderSizePixel = 0
     })
 
     self:Create("UICorner", {
         Parent = Sidebar,
-        CornerRadius = UDim.new(0,14)
+        CornerRadius = UDim.new(0,16)
     })
 
     local SideLayout = self:Create("UIListLayout", {
@@ -134,19 +141,20 @@ function Library:Window(title)
         SortOrder = Enum.SortOrder.LayoutOrder
     })
 
-    local Padding = self:Create("UIPadding", {
+    self:Create("UIPadding", {
         Parent = Sidebar,
         PaddingTop = UDim.new(0,12)
     })
 
-    local Container = self:Create("Frame", {
+    -- content
+    local Content = self:Create("Frame", {
         Parent = Main,
-        Position = UDim2.new(0,195,0,75),
-        Size = UDim2.new(1,-210,1,-90),
+        Position = UDim2.new(0,215,0,80),
+        Size = UDim2.new(1,-230,1,-95),
         BackgroundTransparency = 1
     })
 
-    -- draggable smooth
+    -- drag smooth
     local dragging = false
     local dragStart
     local startPos
@@ -167,33 +175,38 @@ function Library:Window(title)
 
     UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+
             local delta = input.Position - dragStart
 
-            self:Tween(Main,{
+            Library:Tween(Main,{
                 Position = UDim2.new(
                     startPos.X.Scale,
                     startPos.X.Offset + delta.X,
                     startPos.Y.Scale,
                     startPos.Y.Offset + delta.Y
                 )
-            },0.08)
+            },0.06)
         end
     end)
 
-    local WindowFunctions = {}
+    local Window = {}
 
-    function WindowFunctions:Tab(name)
+    function Window:MakeTab(cfg)
+        local Name = cfg.Name or "Tab"
+
         local TabButton = Library:Create("TextButton", {
             Parent = Sidebar,
-            Size = UDim2.new(1,-16,0,42),
+            Size = UDim2.new(1,-16,0,45),
             BackgroundColor3 = Library.Theme.Background,
             Text = "",
             AutoButtonColor = false
         })
 
-        Library:Create("UICorner", {
+        self:CreateUICorner(TabButton)
+
+        local TabStroke = Library:Create("UIStroke", {
             Parent = TabButton,
-            CornerRadius = UDim.new(0,12)
+            Color = Library.Theme.Stroke
         })
 
         local TabText = Library:Create("TextLabel", {
@@ -201,18 +214,18 @@ function Library:Window(title)
             BackgroundTransparency = 1,
             Size = UDim2.new(1,0,1,0),
             Font = Enum.Font.GothamBold,
-            Text = name,
-            TextColor3 = Library.Theme.DarkText,
-            TextSize = 14
+            Text = Name,
+            TextSize = 14,
+            TextColor3 = Library.Theme.DarkText
         })
 
         local Page = Library:Create("ScrollingFrame", {
-            Parent = Container,
-            Size = UDim2.new(1,0,1,0),
-            CanvasSize = UDim2.new(0,0,0,0),
-            ScrollBarThickness = 0,
+            Parent = Content,
             Visible = false,
-            BackgroundTransparency = 1
+            Size = UDim2.new(1,0,1,0),
+            ScrollBarThickness = 0,
+            BackgroundTransparency = 1,
+            CanvasSize = UDim2.new(0,0,0,0)
         })
 
         local Layout = Library:Create("UIListLayout", {
@@ -227,8 +240,8 @@ function Library:Window(title)
         TabButton.MouseEnter:Connect(function()
             if not Page.Visible then
                 Library:Tween(TabButton,{
-                    BackgroundColor3 = Color3.fromRGB(22,22,30)
-                },0.15)
+                    BackgroundColor3 = Color3.fromRGB(20,20,28)
+                })
             end
         end)
 
@@ -236,13 +249,13 @@ function Library:Window(title)
             if not Page.Visible then
                 Library:Tween(TabButton,{
                     BackgroundColor3 = Library.Theme.Background
-                },0.15)
+                })
             end
         end)
 
         TabButton.MouseButton1Click:Connect(function()
 
-            for _,v in pairs(Container:GetChildren()) do
+            for _,v in pairs(Content:GetChildren()) do
                 if v:IsA("ScrollingFrame") then
                     v.Visible = false
                 end
@@ -250,15 +263,24 @@ function Library:Window(title)
 
             for _,v in pairs(Sidebar:GetChildren()) do
                 if v:IsA("TextButton") then
+
                     Library:Tween(v,{
                         BackgroundColor3 = Library.Theme.Background
-                    },0.2)
+                    })
 
-                    local txt = v:FindFirstChildOfClass("TextLabel")
-                    if txt then
-                        Library:Tween(txt,{
+                    local s = v:FindFirstChildOfClass("UIStroke")
+                    local t = v:FindFirstChildOfClass("TextLabel")
+
+                    if s then
+                        Library:Tween(s,{
+                            Color = Library.Theme.Stroke
+                        })
+                    end
+
+                    if t then
+                        Library:Tween(t,{
                             TextColor3 = Library.Theme.DarkText
-                        },0.2)
+                        })
                     end
                 end
             end
@@ -266,28 +288,35 @@ function Library:Window(title)
             Page.Visible = true
 
             Library:Tween(TabButton,{
-                BackgroundColor3 = Library.Theme.Accent
-            },0.2)
+                BackgroundColor3 = Library.Theme.AccentDark
+            })
+
+            Library:Tween(TabStroke,{
+                Color = Library.Theme.Accent
+            })
 
             Library:Tween(TabText,{
                 TextColor3 = Color3.new(1,1,1)
-            },0.2)
+            })
         end)
 
-        local TabFunctions = {}
+        local Tab = {}
 
-        function TabFunctions:Button(text, callback)
+        function Tab:AddButton(cfg)
+
+            local Text = cfg.Name or "Button"
+
             local Button = Library:Create("TextButton", {
                 Parent = Page,
-                Size = UDim2.new(1,-5,0,50),
-                BackgroundColor3 = Library.Theme.Secondary,
+                Size = UDim2.new(1,-5,0,55),
+                BackgroundColor3 = Library.Theme.Card,
                 Text = "",
                 AutoButtonColor = false
             })
 
             Library:Create("UICorner", {
                 Parent = Button,
-                CornerRadius = UDim.new(0,14)
+                CornerRadius = UDim.new(0,16)
             })
 
             local Stroke = Library:Create("UIStroke", {
@@ -298,54 +327,65 @@ function Library:Window(title)
             local Label = Library:Create("TextLabel", {
                 Parent = Button,
                 BackgroundTransparency = 1,
-                Size = UDim2.new(1,-20,1,0),
-                Position = UDim2.new(0,20,0,0),
+                Position = UDim2.new(0,18,0,0),
+                Size = UDim2.new(1,-18,1,0),
                 Font = Enum.Font.GothamBold,
-                Text = text,
-                TextColor3 = Library.Theme.Text,
+                Text = Text,
                 TextSize = 15,
+                TextColor3 = Library.Theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
             Button.MouseEnter:Connect(function()
+
                 Library:Tween(Button,{
-                    BackgroundColor3 = Color3.fromRGB(26,26,36)
-                },0.15)
+                    BackgroundColor3 = Color3.fromRGB(25,25,35)
+                })
 
                 Library:Tween(Stroke,{
                     Color = Library.Theme.Accent
-                },0.15)
+                })
             end)
 
             Button.MouseLeave:Connect(function()
+
                 Library:Tween(Button,{
-                    BackgroundColor3 = Library.Theme.Secondary
-                },0.15)
+                    BackgroundColor3 = Library.Theme.Card
+                })
 
                 Library:Tween(Stroke,{
                     Color = Library.Theme.Stroke
-                },0.15)
+                })
             end)
 
             Button.MouseButton1Down:Connect(function()
+
                 Library:Tween(Button,{
-                    Size = UDim2.new(1,-10,0,46)
-                },0.07)
+                    Size = UDim2.new(1,-10,0,50)
+                },0.08)
             end)
 
             Button.MouseButton1Up:Connect(function()
-                Library:Tween(Button,{
-                    Size = UDim2.new(1,-5,0,50)
-                },0.07)
 
-                pcall(callback)
+                Library:Tween(Button,{
+                    Size = UDim2.new(1,-5,0,55)
+                },0.08)
+
+                pcall(cfg.Callback)
             end)
         end
 
-        return TabFunctions
+        return Tab
     end
 
-    return WindowFunctions
+    return Window
+end
+
+function Library:CreateUICorner(obj)
+    self:Create("UICorner", {
+        Parent = obj,
+        CornerRadius = UDim.new(0,14)
+    })
 end
 
 return Library
