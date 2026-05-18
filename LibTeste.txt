@@ -2746,13 +2746,6 @@ function redzlib:MakeWindow(Configs)
 	return Window
 end
 
-return redzlib
-
-
-
-
-
-
 --// Astazinho Hub Premium
 redzlib.Info.Version = "Astazinho Hub Premium"
 redzlib.Save.Theme = "Astazinho"
@@ -2809,3 +2802,12 @@ game.DescendantAdded:Connect(function(v)
         PremiumEffect(v)
     end)
 end)
+
+
+return redzlib
+
+
+
+
+
+
