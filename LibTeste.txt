@@ -12,15 +12,15 @@ local redzlib = {
 	Themes = {
 		Darker = {
 			["Color Hub 1"] = ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(15, 15, 18)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(20, 20, 24)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 30))
+				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(12, 12, 16)),
+				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(18, 18, 24)),
+				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(12, 12, 16))
 			}),
-			["Color Hub 2"] = Color3.fromRGB(15, 15, 18),
+			["Color Hub 2"] = Color3.fromRGB(16, 16, 20),
 			["Color Stroke"] = Color3.fromRGB(35, 35, 40),
 			["Color Theme"] = Color3.fromRGB(0, 170, 255),
-			["Color Text"] = Color3.fromRGB(243, 243, 243),
-			["Color Dark Text"] = Color3.fromRGB(140, 140, 150)
+			["Color Text"] = Color3.fromRGB(240, 240, 245),
+			["Color Dark Text"] = Color3.fromRGB(150, 150, 160)
 		},
 		Dark = {
 			["Color Hub 1"] = ColorSequence.new({
@@ -44,16 +44,16 @@ local redzlib = {
 			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
 			["Color Theme"] = Color3.fromRGB(150, 0, 255),
 			["Color Text"] = Color3.fromRGB(240, 240, 240),
-			["Color Dark Text"] = Color3.fromRGB(140, 140, 150)
+			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
 		}
 	},
 	Info = {
-		Version = "Astazinho Hub Premium"
+		Version = "Astazinho Hub"
 	},
 	Save = {
 		UISize = {440, 380},
 		TabSize = 150,
-		Theme = "Astazinho"
+		Theme = "Darker"
 	},
 	Settings = {},
 	Connection = {},
@@ -2746,68 +2746,5 @@ function redzlib:MakeWindow(Configs)
 	return Window
 end
 
---// Astazinho Hub Premium
-redzlib.Info.Version = "Astazinho Hub Premium"
-redzlib.Save.Theme = "Astazinho"
-
-redzlib.Themes["Astazinho"] = {
-    ["Color Hub 1"] = ColorSequence.new({
-        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(10, 10, 14)),
-        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(18, 18, 24)),
-        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(10, 10, 14))
-    }),
-    ["Color Hub 2"] = Color3.fromRGB(14, 14, 18),
-    ["Color Stroke"] = Color3.fromRGB(30, 30, 38),
-    ["Color Theme"] = Color3.fromRGB(0, 170, 255),
-    ["Color Text"] = Color3.fromRGB(245, 245, 245),
-    ["Color Dark Text"] = Color3.fromRGB(155, 155, 165)
-}
-
-local PremiumTweenInfo = TweenInfo.new(
-    0.25,
-    Enum.EasingStyle.Quint,
-    Enum.EasingDirection.Out
-)
-
-local function PremiumEffect(Object)
-    if Object:IsA("TextButton") or Object:IsA("ImageButton") then
-        Object.AutoButtonColor = false
-
-        Object.MouseEnter:Connect(function()
-            TweenService:Create(Object, PremiumTweenInfo, {
-                BackgroundTransparency = 0.05
-            }):Play()
-        end)
-
-        Object.MouseLeave:Connect(function()
-            TweenService:Create(Object, PremiumTweenInfo, {
-                BackgroundTransparency = 0.15
-            }):Play()
-        end)
-    end
-
-    if Object:IsA("UICorner") then
-        Object.CornerRadius = UDim.new(0, 12)
-    end
-end
-
-for _,v in ipairs(game:GetDescendants()) do
-    pcall(function()
-        PremiumEffect(v)
-    end)
-end
-
-game.DescendantAdded:Connect(function(v)
-    pcall(function()
-        PremiumEffect(v)
-    end)
-end)
-
-
 return redzlib
-
-
-
-
-
 
