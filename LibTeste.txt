@@ -1,4 +1,4 @@
---// BLACK CLOVER MODERN UI (COMPAT ASTAZINHO HUB)
+--// BLACK CLOVER MODERN UI (FULL FIXED + DRAG BORDER SUPPORT)
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -22,6 +22,7 @@ Library.Theme = {
 }
 
 function Library:Tween(obj,props,time)
+
     TweenService:Create(
         obj,
         TweenInfo.new(
@@ -94,10 +95,11 @@ function Library:MakeWindow(cfg)
 
     local Main = self:Create("Frame",{
         Parent = Gui,
-        Size = UDim2.new(0,470,0,320),
-        Position = UDim2.new(0.5,-235,0.5,-160),
+        Size = UDim2.new(0,470,0,330),
+        Position = UDim2.new(0.5,-235,0.5,-165),
         BackgroundColor3 = self.Theme.Bg,
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        Active = true
     })
 
     self:Corner(Main,16)
@@ -123,7 +125,8 @@ function Library:MakeWindow(cfg)
     local Topbar = self:Create("Frame",{
         Parent = Main,
         Size = UDim2.new(1,0,0,45),
-        BackgroundTransparency = 1
+        BackgroundTransparency = 1,
+        Active = true
     })
 
     local Title = self:Create("TextLabel",{
@@ -185,7 +188,7 @@ function Library:MakeWindow(cfg)
 
     local SideLayout = self:Create("UIListLayout",{
         Parent = Sidebar,
-        Padding = UDim.new(0,5),
+        Padding = UDim.new(0,8),
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         SortOrder = Enum.SortOrder.LayoutOrder
     })
@@ -204,31 +207,27 @@ function Library:MakeWindow(cfg)
         BackgroundTransparency = 1
     })
 
-    -- DRAGGING
+    -- DRAG SUPPORT (BORDAS + TOPBAR)
 
     local dragging = false
     local dragStart
     local startPos
 
-    Topbar.InputBegan:Connect(function(input)
+    local function StartDrag(input)
 
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = Main.Position
-        end
-    end)
+        dragging = true
+        dragStart = input.Position
+        startPos = Main.Position
+    end
 
-    UserInputService.InputEnded:Connect(function(input)
+    local function StopDrag()
 
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
+        dragging = false
+    end
 
-    UserInputService.InputChanged:Connect(function(input)
+    local function Drag(input)
 
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        if dragging then
 
             local delta = input.Position - dragStart
 
@@ -238,6 +237,42 @@ function Library:MakeWindow(cfg)
                 startPos.Y.Scale,
                 startPos.Y.Offset + delta.Y
             )
+        end
+    end
+
+    Main.InputBegan:Connect(function(input)
+
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            StartDrag(input)
+        end
+    end)
+
+    Topbar.InputBegan:Connect(function(input)
+
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            StartDrag(input)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            Drag(input)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            StopDrag()
         end
     end)
 
@@ -272,23 +307,23 @@ function Library:MakeWindow(cfg)
         local Name
 
         if typeof(cfg) == "table" then
-            Name = cfg.Name or cfg[1] or "Tab"
+            Name = cfg.Name or cfg.Title or cfg[1] or "Tab"
         else
             Name = tostring(cfg)
         end
 
         local TabButton = Library:Create("TextButton",{
             Parent = Sidebar,
-            Size = UDim2.new(1,-10,0,30),
+            Size = UDim2.new(1,-10,0,42),
             BackgroundColor3 = Library.Theme.Bg,
             Text = Name,
             Font = Enum.Font.GothamBold,
-            TextSize = 12,
+            TextSize = 14,
             TextColor3 = Library.Theme.DarkText,
             AutoButtonColor = false
         })
 
-        Library:Corner(TabButton,9)
+        Library:Corner(TabButton,10)
         Library:Stroke(TabButton)
 
         local Page = Library:Create("ScrollingFrame",{
@@ -296,25 +331,20 @@ function Library:MakeWindow(cfg)
             Size = UDim2.new(1,0,1,0),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            ScrollBarThickness = 2,
+            ScrollBarThickness = 3,
             Visible = false,
-            CanvasSize = UDim2.new(0,0,0,0)
+            CanvasSize = UDim2.new(0,0,0,0),
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+            ScrollBarImageColor3 = Library.Theme.Accent
         })
 
         local Layout = Library:Create("UIListLayout",{
             Parent = Page,
-            Padding = UDim.new(0,6)
+            Padding = UDim.new(0,8),
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            HorizontalAlignment = Enum.HorizontalAlignment.Center
         })
-
-        Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-
-            Page.CanvasSize = UDim2.new(
-                0,
-                0,
-                0,
-                Layout.AbsoluteContentSize.Y + 10
-            )
-        end)
 
         TabButton.MouseButton1Click:Connect(function()
 
@@ -358,15 +388,15 @@ function Library:MakeWindow(cfg)
 
         function Tab:AddSection(cfg)
 
-            local text = cfg[1] or cfg.Name or "Section"
+            local text = cfg.Title or cfg.Name or cfg[1] or "Section"
 
             local Label = Library:Create("TextLabel",{
                 Parent = Page,
-                Size = UDim2.new(1,-2,0,28),
+                Size = UDim2.new(1,-6,0,30),
                 BackgroundTransparency = 1,
-                Text = text,
                 Font = Enum.Font.GothamBold,
-                TextSize = 15,
+                Text = tostring(text),
+                TextSize = 16,
                 TextColor3 = Library.Theme.Accent,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
@@ -378,12 +408,13 @@ function Library:MakeWindow(cfg)
 
         function Tab:AddParagraph(cfg)
 
-            local title = cfg[1] or "Title"
-            local desc = cfg[2] or "Description"
+            local title = cfg.Title or cfg[1] or "Title"
+            local desc = cfg.Content or cfg.Desc or cfg[2] or "Description"
 
             local Frame = Library:Create("Frame",{
                 Parent = Page,
-                Size = UDim2.new(1,-2,0,55),
+                Size = UDim2.new(1,-2,0,80),
+                AutomaticSize = Enum.AutomaticSize.Y,
                 BackgroundColor3 = Library.Theme.Card,
                 BorderSizePixel = 0
             })
@@ -391,14 +422,29 @@ function Library:MakeWindow(cfg)
             Library:Corner(Frame,10)
             Library:Stroke(Frame)
 
+            Library:Create("UIPadding",{
+                Parent = Frame,
+                PaddingTop = UDim.new(0,10),
+                PaddingBottom = UDim.new(0,10),
+                PaddingLeft = UDim.new(0,12),
+                PaddingRight = UDim.new(0,12)
+            })
+
+            Library:Create("UIListLayout",{
+                Parent = Frame,
+                Padding = UDim.new(0,4),
+                SortOrder = Enum.SortOrder.LayoutOrder
+            })
+
             local TitleLabel = Library:Create("TextLabel",{
                 Parent = Frame,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0,10,0,5),
-                Size = UDim2.new(1,-20,0,20),
+                Size = UDim2.new(1,0,0,20),
+                AutomaticSize = Enum.AutomaticSize.Y,
                 Font = Enum.Font.GothamBold,
                 Text = tostring(title),
-                TextSize = 13,
+                TextSize = 14,
+                TextWrapped = true,
                 TextColor3 = Library.Theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
@@ -406,13 +452,13 @@ function Library:MakeWindow(cfg)
             local DescLabel = Library:Create("TextLabel",{
                 Parent = Frame,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0,10,0,24),
-                Size = UDim2.new(1,-20,0,20),
+                Size = UDim2.new(1,0,0,18),
+                AutomaticSize = Enum.AutomaticSize.Y,
                 Font = Enum.Font.Gotham,
                 Text = tostring(desc),
-                TextSize = 12,
-                TextColor3 = Library.Theme.DarkText,
+                TextSize = 13,
                 TextWrapped = true,
+                TextColor3 = Library.Theme.DarkText,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
@@ -425,7 +471,7 @@ function Library:MakeWindow(cfg)
 
             local Button = Library:Create("TextButton",{
                 Parent = Page,
-                Size = UDim2.new(1,-2,0,36),
+                Size = UDim2.new(1,-2,0,40),
                 BackgroundColor3 = Library.Theme.Card,
                 Text = "",
                 AutoButtonColor = false
@@ -437,10 +483,10 @@ function Library:MakeWindow(cfg)
             local Label = Library:Create("TextLabel",{
                 Parent = Button,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0,10,0,0),
-                Size = UDim2.new(1,-10,1,0),
+                Position = UDim2.new(0,12,0,0),
+                Size = UDim2.new(1,-12,1,0),
                 Font = Enum.Font.GothamMedium,
-                Text = cfg.Name or cfg[1] or "Button",
+                Text = cfg.Name or cfg.Title or cfg[1] or "Button",
                 TextSize = 13,
                 TextColor3 = Library.Theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Left
