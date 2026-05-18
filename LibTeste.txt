@@ -1,4 +1,4 @@
---// BLACK CLOVER MODERN UI (FULL FIXED + DRAG BORDER SUPPORT)
+--// BLACK CLOVER UI LIB - FULL ASTAZINHO HUB COMPAT
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -74,8 +74,6 @@ function Library:MakeWindow(cfg)
         ResetOnSpawn = false
     })
 
-    -- FLOAT BUTTON
-
     local Float = self:Create("TextButton",{
         Parent = Gui,
         Size = UDim2.new(0,46,0,46),
@@ -91,8 +89,6 @@ function Library:MakeWindow(cfg)
 
     self:Corner(Float,999)
 
-    -- MAIN
-
     local Main = self:Create("Frame",{
         Parent = Gui,
         Size = UDim2.new(0,470,0,330),
@@ -104,8 +100,6 @@ function Library:MakeWindow(cfg)
 
     self:Corner(Main,16)
     self:Stroke(Main)
-
-    -- GLOW
 
     local Glow = self:Create("ImageLabel",{
         Parent = Main,
@@ -119,8 +113,6 @@ function Library:MakeWindow(cfg)
         Position = UDim2.new(0,-18,0,-18),
         ZIndex = 0
     })
-
-    -- TOPBAR
 
     local Topbar = self:Create("Frame",{
         Parent = Main,
@@ -141,8 +133,6 @@ function Library:MakeWindow(cfg)
         TextXAlignment = Enum.TextXAlignment.Left
     })
 
-    -- MINIMIZE
-
     local Minimize = self:Create("TextButton",{
         Parent = Topbar,
         Size = UDim2.new(0,24,0,24),
@@ -158,8 +148,6 @@ function Library:MakeWindow(cfg)
     self:Corner(Minimize,8)
     self:Stroke(Minimize)
 
-    -- CLOSE
-
     local Close = self:Create("TextButton",{
         Parent = Topbar,
         Size = UDim2.new(0,24,0,24),
@@ -173,8 +161,6 @@ function Library:MakeWindow(cfg)
     })
 
     self:Corner(Close,8)
-
-    -- SIDEBAR
 
     local Sidebar = self:Create("Frame",{
         Parent = Main,
@@ -198,8 +184,6 @@ function Library:MakeWindow(cfg)
         PaddingTop = UDim.new(0,8)
     })
 
-    -- CONTENT
-
     local Content = self:Create("Frame",{
         Parent = Main,
         Position = UDim2.new(0,140,0,52),
@@ -207,7 +191,7 @@ function Library:MakeWindow(cfg)
         BackgroundTransparency = 1
     })
 
-    -- DRAG SUPPORT (BORDAS + TOPBAR)
+    -- DRAG
 
     local dragging = false
     local dragStart
@@ -249,15 +233,6 @@ function Library:MakeWindow(cfg)
         end
     end)
 
-    Topbar.InputBegan:Connect(function(input)
-
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
-
-            StartDrag(input)
-        end
-    end)
-
     UserInputService.InputChanged:Connect(function(input)
 
         if input.UserInputType == Enum.UserInputType.MouseMovement
@@ -275,8 +250,6 @@ function Library:MakeWindow(cfg)
             StopDrag()
         end
     end)
-
-    -- BUTTONS
 
     Minimize.MouseButton1Click:Connect(function()
 
@@ -298,7 +271,7 @@ function Library:MakeWindow(cfg)
     local Window = {}
     local FirstTab = false
 
-    function Window:AddMinimizeButton(cfg)
+    function Window:AddMinimizeButton()
         return true
     end
 
@@ -384,8 +357,6 @@ function Library:MakeWindow(cfg)
 
         local Tab = {}
 
-        -- SECTION
-
         function Tab:AddSection(cfg)
 
             local text = cfg.Title or cfg.Name or cfg[1] or "Section"
@@ -403,8 +374,6 @@ function Library:MakeWindow(cfg)
 
             return Label
         end
-
-        -- PARAGRAPH
 
         function Tab:AddParagraph(cfg)
 
@@ -465,8 +434,6 @@ function Library:MakeWindow(cfg)
             return Frame
         end
 
-        -- BUTTON
-
         function Tab:AddButton(cfg)
 
             local Button = Library:Create("TextButton",{
@@ -492,20 +459,6 @@ function Library:MakeWindow(cfg)
                 TextXAlignment = Enum.TextXAlignment.Left
             })
 
-            Button.MouseEnter:Connect(function()
-
-                Library:Tween(Button,{
-                    BackgroundColor3 = Color3.fromRGB(28,28,38)
-                })
-            end)
-
-            Button.MouseLeave:Connect(function()
-
-                Library:Tween(Button,{
-                    BackgroundColor3 = Library.Theme.Card
-                })
-            end)
-
             Button.MouseButton1Click:Connect(function()
 
                 if cfg.Callback then
@@ -516,6 +469,178 @@ function Library:MakeWindow(cfg)
             end)
 
             return Button
+        end
+
+        function Tab:AddToggle(cfg)
+
+            local enabled = cfg.Default or false
+
+            local Toggle = Library:Create("TextButton",{
+                Parent = Page,
+                Size = UDim2.new(1,-2,0,40),
+                BackgroundColor3 = Library.Theme.Card,
+                Text = "",
+                AutoButtonColor = false
+            })
+
+            Library:Corner(Toggle,10)
+            Library:Stroke(Toggle)
+
+            local Label = Library:Create("TextLabel",{
+                Parent = Toggle,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0,12,0,0),
+                Size = UDim2.new(1,-60,1,0),
+                Font = Enum.Font.GothamMedium,
+                Text = cfg.Name or cfg.Title or "Toggle",
+                TextSize = 13,
+                TextColor3 = Library.Theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            local Indicator = Library:Create("Frame",{
+                Parent = Toggle,
+                Size = UDim2.new(0,18,0,18),
+                Position = UDim2.new(1,-32,0.5,-9),
+                BackgroundColor3 = enabled and Library.Theme.Accent or Color3.fromRGB(40,40,40)
+            })
+
+            Library:Corner(Indicator,999)
+
+            Toggle.MouseButton1Click:Connect(function()
+
+                enabled = not enabled
+
+                Library:Tween(Indicator,{
+                    BackgroundColor3 = enabled and Library.Theme.Accent or Color3.fromRGB(40,40,40)
+                })
+
+                if cfg.Callback then
+                    pcall(cfg.Callback,enabled)
+                end
+            end)
+
+            return Toggle
+        end
+
+        function Tab:AddTextbox(cfg)
+
+            local BoxFrame = Library:Create("Frame",{
+                Parent = Page,
+                Size = UDim2.new(1,-2,0,45),
+                BackgroundColor3 = Library.Theme.Card
+            })
+
+            Library:Corner(BoxFrame,10)
+            Library:Stroke(BoxFrame)
+
+            local Box = Library:Create("TextBox",{
+                Parent = BoxFrame,
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1,-20,1,0),
+                Position = UDim2.new(0,10,0,0),
+                Font = Enum.Font.Gotham,
+                PlaceholderText = cfg.Placeholder or "Input...",
+                Text = "",
+                TextSize = 13,
+                TextColor3 = Library.Theme.Text,
+                PlaceholderColor3 = Library.Theme.DarkText,
+                ClearTextOnFocus = false
+            })
+
+            Box.FocusLost:Connect(function()
+
+                if cfg.Callback then
+                    pcall(cfg.Callback,Box.Text)
+                end
+            end)
+
+            return Box
+        end
+
+        function Tab:AddSlider(cfg)
+
+            local min = cfg.Min or 0
+            local max = cfg.Max or 100
+            local value = cfg.Default or min
+
+            local SliderFrame = Library:Create("Frame",{
+                Parent = Page,
+                Size = UDim2.new(1,-2,0,50),
+                BackgroundColor3 = Library.Theme.Card
+            })
+
+            Library:Corner(SliderFrame,10)
+            Library:Stroke(SliderFrame)
+
+            local Label = Library:Create("TextLabel",{
+                Parent = SliderFrame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0,10,0,0),
+                Size = UDim2.new(1,-20,0,20),
+                Font = Enum.Font.GothamBold,
+                Text = (cfg.Name or "Slider").." : "..tostring(value),
+                TextSize = 13,
+                TextColor3 = Library.Theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            local Bar = Library:Create("Frame",{
+                Parent = SliderFrame,
+                Position = UDim2.new(0,10,0,30),
+                Size = UDim2.new(1,-20,0,6),
+                BackgroundColor3 = Color3.fromRGB(40,40,40)
+            })
+
+            Library:Corner(Bar,999)
+
+            local Fill = Library:Create("Frame",{
+                Parent = Bar,
+                Size = UDim2.new((value-min)/(max-min),0,1,0),
+                BackgroundColor3 = Library.Theme.Accent
+            })
+
+            Library:Corner(Fill,999)
+
+            local draggingSlider = false
+
+            Bar.InputBegan:Connect(function(input)
+
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    draggingSlider = true
+                end
+            end)
+
+            UserInputService.InputEnded:Connect(function(input)
+
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    draggingSlider = false
+                end
+            end)
+
+            UserInputService.InputChanged:Connect(function(input)
+
+                if draggingSlider and input.UserInputType == Enum.UserInputType.MouseMovement then
+
+                    local percent = math.clamp(
+                        (input.Position.X - Bar.AbsolutePosition.X) / Bar.AbsoluteSize.X,
+                        0,
+                        1
+                    )
+
+                    value = math.floor(min + ((max-min) * percent))
+
+                    Fill.Size = UDim2.new(percent,0,1,0)
+
+                    Label.Text = (cfg.Name or "Slider").." : "..tostring(value)
+
+                    if cfg.Callback then
+                        pcall(cfg.Callback,value)
+                    end
+                end
+            end)
+
+            return SliderFrame
         end
 
         return Tab
