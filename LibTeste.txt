@@ -1,10 +1,11 @@
---// BLACK CLOVER MODERN UI
---// FIXED VERSION
---// compacta + moderna + compatível
+--// BLACK CLOVER MODERN UI (FIXED PROPORTIONS)
+--// Compact + Modern + Compatible
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+
+local ParentUI = gethui and gethui() or CoreGui
 
 local Library = {}
 
@@ -63,7 +64,7 @@ function Library:MakeWindow(cfg)
     local WindowName = cfg.Name or "Asta Hub"
 
     local Gui = self:Create("ScreenGui",{
-        Parent = CoreGui,
+        Parent = ParentUI,
         Name = "BlackCloverUI",
         ResetOnSpawn = false
     })
@@ -72,14 +73,15 @@ function Library:MakeWindow(cfg)
 
     local Float = self:Create("TextButton",{
         Parent = Gui,
-        Size = UDim2.new(0,50,0,50),
+        Size = UDim2.new(0,46,0,46),
         Position = UDim2.new(0,20,0.5,0),
         BackgroundColor3 = self.Theme.Accent,
         Text = "✦",
         Font = Enum.Font.GothamBlack,
-        TextSize = 22,
+        TextSize = 20,
         TextColor3 = Color3.new(1,1,1),
-        Visible = false
+        Visible = false,
+        AutoButtonColor = false
     })
 
     self:Corner(Float,999)
@@ -88,13 +90,13 @@ function Library:MakeWindow(cfg)
 
     local Main = self:Create("Frame",{
         Parent = Gui,
-        Size = UDim2.new(0,520,0,340),
-        Position = UDim2.new(0.5,-260,0.5,-170),
+        Size = UDim2.new(0,470,0,300),
+        Position = UDim2.new(0.5,-235,0.5,-150),
         BackgroundColor3 = self.Theme.Bg,
         BorderSizePixel = 0
     })
 
-    self:Corner(Main,18)
+    self:Corner(Main,16)
     self:Stroke(Main)
 
     local Glow = self:Create("ImageLabel",{
@@ -104,9 +106,9 @@ function Library:MakeWindow(cfg)
         ScaleType = Enum.ScaleType.Slice,
         SliceCenter = Rect.new(24,24,276,276),
         ImageColor3 = self.Theme.Accent,
-        ImageTransparency = 0.45,
-        Size = UDim2.new(1,40,1,40),
-        Position = UDim2.new(0,-20,0,-20),
+        ImageTransparency = 0.5,
+        Size = UDim2.new(1,36,1,36),
+        Position = UDim2.new(0,-18,0,-18),
         ZIndex = 0
     })
 
@@ -114,18 +116,18 @@ function Library:MakeWindow(cfg)
 
     local Topbar = self:Create("Frame",{
         Parent = Main,
-        Size = UDim2.new(1,0,0,50),
+        Size = UDim2.new(1,0,0,45),
         BackgroundTransparency = 1
     })
 
     local Title = self:Create("TextLabel",{
         Parent = Topbar,
         BackgroundTransparency = 1,
-        Position = UDim2.new(0,15,0,0),
+        Position = UDim2.new(0,14,0,0),
         Size = UDim2.new(1,-100,1,0),
         Font = Enum.Font.GothamBold,
         Text = WindowName,
-        TextSize = 18,
+        TextSize = 16,
         TextColor3 = self.Theme.Text,
         TextXAlignment = Enum.TextXAlignment.Left
     })
@@ -134,13 +136,14 @@ function Library:MakeWindow(cfg)
 
     local Minimize = self:Create("TextButton",{
         Parent = Topbar,
-        Size = UDim2.new(0,28,0,28),
-        Position = UDim2.new(1,-70,0.5,-14),
+        Size = UDim2.new(0,24,0,24),
+        Position = UDim2.new(1,-62,0.5,-12),
         BackgroundColor3 = self.Theme.Card,
         Text = "-",
         Font = Enum.Font.GothamBold,
-        TextSize = 20,
-        TextColor3 = self.Theme.Text
+        TextSize = 18,
+        TextColor3 = self.Theme.Text,
+        AutoButtonColor = false
     })
 
     self:Corner(Minimize,8)
@@ -150,13 +153,14 @@ function Library:MakeWindow(cfg)
 
     local Close = self:Create("TextButton",{
         Parent = Topbar,
-        Size = UDim2.new(0,28,0,28),
-        Position = UDim2.new(1,-35,0.5,-14),
+        Size = UDim2.new(0,24,0,24),
+        Position = UDim2.new(1,-32,0.5,-12),
         BackgroundColor3 = Color3.fromRGB(120,40,40),
         Text = "X",
         Font = Enum.Font.GothamBold,
-        TextSize = 14,
-        TextColor3 = Color3.new(1,1,1)
+        TextSize = 13,
+        TextColor3 = Color3.new(1,1,1),
+        AutoButtonColor = false
     })
 
     self:Corner(Close,8)
@@ -165,34 +169,36 @@ function Library:MakeWindow(cfg)
 
     local Sidebar = self:Create("Frame",{
         Parent = Main,
-        Position = UDim2.new(0,10,0,60),
-        Size = UDim2.new(0,135,1,-70),
-        BackgroundColor3 = self.Theme.Second
+        Position = UDim2.new(0,10,0,52),
+        Size = UDim2.new(0,120,1,-62),
+        BackgroundColor3 = self.Theme.Second,
+        BorderSizePixel = 0
     })
 
-    self:Corner(Sidebar,14)
+    self:Corner(Sidebar,12)
 
     local SideLayout = self:Create("UIListLayout",{
         Parent = Sidebar,
-        Padding = UDim.new(0,6),
-        HorizontalAlignment = Enum.HorizontalAlignment.Center
+        Padding = UDim.new(0,5),
+        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+        SortOrder = Enum.SortOrder.LayoutOrder
     })
 
     self:Create("UIPadding",{
         Parent = Sidebar,
-        PaddingTop = UDim.new(0,10)
+        PaddingTop = UDim.new(0,8)
     })
 
     -- CONTENT
 
     local Content = self:Create("Frame",{
         Parent = Main,
-        Position = UDim2.new(0,155,0,60),
-        Size = UDim2.new(1,-165,1,-70),
+        Position = UDim2.new(0,140,0,52),
+        Size = UDim2.new(1,-150,1,-62),
         BackgroundTransparency = 1
     })
 
-    -- DRAG
+    -- DRAGGING
 
     local dragging = false
     local dragStart
@@ -249,7 +255,7 @@ function Library:MakeWindow(cfg)
     end)
 
     local Window = {}
-    local FirstTab = nil
+    local FirstTab = false
 
     function Window:MakeTab(cfg)
 
@@ -257,16 +263,16 @@ function Library:MakeWindow(cfg)
 
         local TabButton = Library:Create("TextButton",{
             Parent = Sidebar,
-            Size = UDim2.new(1,-12,0,34),
+            Size = UDim2.new(1,-10,0,30),
             BackgroundColor3 = Library.Theme.Bg,
             Text = Name,
             Font = Enum.Font.GothamBold,
-            TextSize = 13,
+            TextSize = 12,
             TextColor3 = Library.Theme.DarkText,
             AutoButtonColor = false
         })
 
-        Library:Corner(TabButton,10)
+        Library:Corner(TabButton,9)
         Library:Stroke(TabButton)
 
         local Page = Library:Create("ScrollingFrame",{
@@ -274,14 +280,14 @@ function Library:MakeWindow(cfg)
             Size = UDim2.new(1,0,1,0),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            ScrollBarThickness = 3,
+            ScrollBarThickness = 2,
             Visible = false,
             CanvasSize = UDim2.new(0,0,0,0)
         })
 
         local Layout = Library:Create("UIListLayout",{
             Parent = Page,
-            Padding = UDim.new(0,8)
+            Padding = UDim.new(0,6)
         })
 
         Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -290,7 +296,7 @@ function Library:MakeWindow(cfg)
                 0,
                 0,
                 0,
-                Layout.AbsoluteContentSize.Y + 15
+                Layout.AbsoluteContentSize.Y + 10
             )
         end)
 
@@ -320,12 +326,11 @@ function Library:MakeWindow(cfg)
             })
         end)
 
-        -- AUTO FIRST TAB
+        -- FIRST TAB AUTO OPEN
 
         if not FirstTab then
-            FirstTab = TabButton
 
-            task.wait()
+            FirstTab = true
 
             Page.Visible = true
 
@@ -339,23 +344,23 @@ function Library:MakeWindow(cfg)
 
             local Button = Library:Create("TextButton",{
                 Parent = Page,
-                Size = UDim2.new(1,-4,0,42),
+                Size = UDim2.new(1,-2,0,36),
                 BackgroundColor3 = Library.Theme.Card,
                 Text = "",
                 AutoButtonColor = false
             })
 
-            Library:Corner(Button,12)
+            Library:Corner(Button,10)
             Library:Stroke(Button)
 
             local Label = Library:Create("TextLabel",{
                 Parent = Button,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0,12,0,0),
-                Size = UDim2.new(1,-12,1,0),
+                Position = UDim2.new(0,10,0,0),
+                Size = UDim2.new(1,-10,1,0),
                 Font = Enum.Font.GothamMedium,
                 Text = cfg.Name or "Button",
-                TextSize = 14,
+                TextSize = 13,
                 TextColor3 = Library.Theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Left
             })
@@ -376,7 +381,9 @@ function Library:MakeWindow(cfg)
 
             Button.MouseButton1Click:Connect(function()
 
-                pcall(cfg.Callback)
+                if cfg.Callback then
+                    pcall(cfg.Callback)
+                end
             end)
         end
 
