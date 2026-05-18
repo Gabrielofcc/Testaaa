@@ -2750,62 +2750,62 @@ return redzlib
 
 
 
---// Astazinho Hub Premium Visual Upgrade
-local PremiumTween = TweenInfo.new(
-    0.35,
+
+
+
+--// Astazinho Hub Premium
+redzlib.Info.Version = "Astazinho Hub Premium"
+redzlib.Save.Theme = "Astazinho"
+
+redzlib.Themes["Astazinho"] = {
+    ["Color Hub 1"] = ColorSequence.new({
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(10, 10, 14)),
+        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(18, 18, 24)),
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(10, 10, 14))
+    }),
+    ["Color Hub 2"] = Color3.fromRGB(14, 14, 18),
+    ["Color Stroke"] = Color3.fromRGB(30, 30, 38),
+    ["Color Theme"] = Color3.fromRGB(0, 170, 255),
+    ["Color Text"] = Color3.fromRGB(245, 245, 245),
+    ["Color Dark Text"] = Color3.fromRGB(155, 155, 165)
+}
+
+local PremiumTweenInfo = TweenInfo.new(
+    0.25,
     Enum.EasingStyle.Quint,
     Enum.EasingDirection.Out
 )
 
-local HoverTween = TweenInfo.new(
-    0.22,
-    Enum.EasingStyle.Sine,
-    Enum.EasingDirection.Out
-)
-
-local function SmoothObject(Object)
-    if Object:IsA("Frame") or Object:IsA("TextButton") or Object:IsA("ImageButton") then
-        Object.BackgroundTransparency = math.clamp(Object.BackgroundTransparency + 0.02, 0, 1)
+local function PremiumEffect(Object)
+    if Object:IsA("TextButton") or Object:IsA("ImageButton") then
+        Object.AutoButtonColor = false
 
         Object.MouseEnter:Connect(function()
-            TweenService:Create(Object, HoverTween, {
-                BackgroundTransparency = math.clamp(Object.BackgroundTransparency - 0.08, 0, 1)
+            TweenService:Create(Object, PremiumTweenInfo, {
+                BackgroundTransparency = 0.05
             }):Play()
         end)
 
         Object.MouseLeave:Connect(function()
-            TweenService:Create(Object, HoverTween, {
-                BackgroundTransparency = math.clamp(Object.BackgroundTransparency + 0.08, 0, 1)
+            TweenService:Create(Object, PremiumTweenInfo, {
+                BackgroundTransparency = 0.15
             }):Play()
         end)
+    end
+
+    if Object:IsA("UICorner") then
+        Object.CornerRadius = UDim.new(0, 12)
     end
 end
 
 for _,v in ipairs(game:GetDescendants()) do
     pcall(function()
-        SmoothObject(v)
+        PremiumEffect(v)
     end)
 end
 
 game.DescendantAdded:Connect(function(v)
     pcall(function()
-        SmoothObject(v)
+        PremiumEffect(v)
     end)
 end)
-
---// Premium Dark Theme
-redzlib.Themes["Astazinho"] = {
-    ["Color Hub 1"] = ColorSequence.new({
-        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(10,10,14)),
-        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(18,18,24)),
-        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(10,10,14))
-    }),
-    ["Color Hub 2"] = Color3.fromRGB(14,14,18),
-    ["Color Stroke"] = Color3.fromRGB(35,35,45),
-    ["Color Theme"] = Color3.fromRGB(0,170,255),
-    ["Color Text"] = Color3.fromRGB(245,245,245),
-    ["Color Dark Text"] = Color3.fromRGB(150,150,160)
-}
-
---// Futuristic UI Feel
-UIScale = UIScale * 1.02
