@@ -1,5 +1,4 @@
---// BLACK CLOVER MODERN UI (FIXED PROPORTIONS)
---// Compact + Modern + Compatible
+--// BLACK CLOVER MODERN UI (COMPAT ASTAZINHO HUB)
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -35,6 +34,7 @@ function Library:Tween(obj,props,time)
 end
 
 function Library:Create(class,props)
+
     local obj = Instance.new(class)
 
     for i,v in pairs(props or {}) do
@@ -45,6 +45,7 @@ function Library:Create(class,props)
 end
 
 function Library:Corner(obj,radius)
+
     self:Create("UICorner",{
         Parent = obj,
         CornerRadius = UDim.new(0,radius or 12)
@@ -52,6 +53,7 @@ function Library:Corner(obj,radius)
 end
 
 function Library:Stroke(obj,color)
+
     self:Create("UIStroke",{
         Parent = obj,
         Color = color or self.Theme.Stroke,
@@ -61,7 +63,9 @@ end
 
 function Library:MakeWindow(cfg)
 
-    local WindowName = cfg.Name or "Asta Hub"
+    cfg = cfg or {}
+
+    local WindowName = cfg.Name or cfg.Title or "Asta Hub"
 
     local Gui = self:Create("ScreenGui",{
         Parent = ParentUI,
@@ -90,14 +94,16 @@ function Library:MakeWindow(cfg)
 
     local Main = self:Create("Frame",{
         Parent = Gui,
-        Size = UDim2.new(0,470,0,300),
-        Position = UDim2.new(0.5,-235,0.5,-150),
+        Size = UDim2.new(0,470,0,320),
+        Position = UDim2.new(0.5,-235,0.5,-160),
         BackgroundColor3 = self.Theme.Bg,
         BorderSizePixel = 0
     })
 
     self:Corner(Main,16)
     self:Stroke(Main)
+
+    -- GLOW
 
     local Glow = self:Create("ImageLabel",{
         Parent = Main,
@@ -257,9 +263,19 @@ function Library:MakeWindow(cfg)
     local Window = {}
     local FirstTab = false
 
+    function Window:AddMinimizeButton(cfg)
+        return true
+    end
+
     function Window:MakeTab(cfg)
 
-        local Name = cfg.Name or "Tab"
+        local Name
+
+        if typeof(cfg) == "table" then
+            Name = cfg.Name or cfg[1] or "Tab"
+        else
+            Name = tostring(cfg)
+        end
 
         local TabButton = Library:Create("TextButton",{
             Parent = Sidebar,
@@ -326,8 +342,6 @@ function Library:MakeWindow(cfg)
             })
         end)
 
-        -- FIRST TAB AUTO OPEN
-
         if not FirstTab then
 
             FirstTab = true
@@ -339,6 +353,73 @@ function Library:MakeWindow(cfg)
         end
 
         local Tab = {}
+
+        -- SECTION
+
+        function Tab:AddSection(cfg)
+
+            local text = cfg[1] or cfg.Name or "Section"
+
+            local Label = Library:Create("TextLabel",{
+                Parent = Page,
+                Size = UDim2.new(1,-2,0,28),
+                BackgroundTransparency = 1,
+                Text = text,
+                Font = Enum.Font.GothamBold,
+                TextSize = 15,
+                TextColor3 = Library.Theme.Accent,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            return Label
+        end
+
+        -- PARAGRAPH
+
+        function Tab:AddParagraph(cfg)
+
+            local title = cfg[1] or "Title"
+            local desc = cfg[2] or "Description"
+
+            local Frame = Library:Create("Frame",{
+                Parent = Page,
+                Size = UDim2.new(1,-2,0,55),
+                BackgroundColor3 = Library.Theme.Card,
+                BorderSizePixel = 0
+            })
+
+            Library:Corner(Frame,10)
+            Library:Stroke(Frame)
+
+            local TitleLabel = Library:Create("TextLabel",{
+                Parent = Frame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0,10,0,5),
+                Size = UDim2.new(1,-20,0,20),
+                Font = Enum.Font.GothamBold,
+                Text = tostring(title),
+                TextSize = 13,
+                TextColor3 = Library.Theme.Text,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            local DescLabel = Library:Create("TextLabel",{
+                Parent = Frame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0,10,0,24),
+                Size = UDim2.new(1,-20,0,20),
+                Font = Enum.Font.Gotham,
+                Text = tostring(desc),
+                TextSize = 12,
+                TextColor3 = Library.Theme.DarkText,
+                TextWrapped = true,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+
+            return Frame
+        end
+
+        -- BUTTON
 
         function Tab:AddButton(cfg)
 
@@ -359,7 +440,7 @@ function Library:MakeWindow(cfg)
                 Position = UDim2.new(0,10,0,0),
                 Size = UDim2.new(1,-10,1,0),
                 Font = Enum.Font.GothamMedium,
-                Text = cfg.Name or "Button",
+                Text = cfg.Name or cfg[1] or "Button",
                 TextSize = 13,
                 TextColor3 = Library.Theme.Text,
                 TextXAlignment = Enum.TextXAlignment.Left
@@ -383,8 +464,12 @@ function Library:MakeWindow(cfg)
 
                 if cfg.Callback then
                     pcall(cfg.Callback)
+                elseif cfg[2] then
+                    pcall(cfg[2])
                 end
             end)
+
+            return Button
         end
 
         return Tab
